@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Kelly Education — Substitute Program ROI Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --green:#00a651;
+  --green-dark:#007a3d;
+  --green-light:#e8f7ef;
+  --green-mid:#9fd8b8;
+  --navy:#003087;
+  --navy-light:#e8edf7;
+  --white:#ffffff;
+  --off-white:#f8f9f7;
+  --gray-100:#f2f3f1;
+  --gray-200:#e4e5e2;
+  --gray-400:#9a9b97;
+  --gray-600:#5a5c57;
+  --gray-900:#1a1c18;
+  --red:#c0392b;
+  --border:rgba(0,0,0,0.08);
+  --radius:10px;
+  --radius-lg:16px;
+  --shadow:0 1px 3px rgba(0,0,0,0.06),0 4px 16px rgba(0,0,0,0.05);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--gray-900);font-size:15px;line-height:1.6;min-height:100vh}
+
+/* HEADER */
+.site-header{background:var(--green);border-bottom:none;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100}
+.logo-wrap{display:flex;align-items:center;gap:10px}
+.logo-mark{background:var(--white);color:var(--green);font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;padding:5px 12px;border-radius:6px;letter-spacing:.06em;text-transform:uppercase}
+.logo-sub{color:rgba(255,255,255,0.85);font-size:13px;font-weight:500}
+.header-tag{color:rgba(255,255,255,0.75);font-size:12px;font-weight:400;letter-spacing:.04em}
+
+/* HERO */
+.hero{background:var(--white);border-bottom:1px solid var(--border);padding:3rem 2rem 4rem;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 100%,rgba(0,166,81,0.06) 0%,transparent 70%)}
+.hero-eyebrow{display:inline-block;background:var(--green-light);color:var(--green-dark);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:4px 14px;border-radius:20px;margin-bottom:1.25rem;border:1px solid var(--green-mid)}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(28px,5vw,48px);color:var(--navy);line-height:1.15;margin-bottom:.75rem;position:relative}
+.hero h1 em{color:var(--green);font-style:italic}
+.hero-sub{color:var(--gray-600);font-size:15px;font-weight:300;max-width:520px;margin:0 auto;position:relative}
+
+/* LAYOUT */
+.container{max-width:860px;margin:0 auto;padding:2rem 1.5rem 4rem}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+.one-col{display:grid;grid-template-columns:1fr;gap:1rem}
+
+/* CARDS */
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1rem;box-shadow:var(--shadow)}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:1.25rem}
+.card-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.card-icon.green{background:var(--green-light)}
+.card-icon.navy{background:var(--navy-light)}
+.sec-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--green)}
+.sec-title{font-size:16px;font-weight:500;color:var(--gray-900)}
+
+/* FORM */
+.field-group{display:flex;flex-direction:column;gap:5px;margin-bottom:0}
+.field-group label{font-size:12px;font-weight:500;color:var(--gray-600);letter-spacing:.02em}
+.field-group input,.field-group select{
+  width:100%;padding:9px 12px;
+  border:1.5px solid var(--gray-200);
+  border-radius:var(--radius);
+  background:var(--white);
+  color:var(--gray-900);
+  font-size:14px;
+  font-family:'DM Sans',sans-serif;
+  transition:border-color .15s;
+  outline:none;
+}
+.field-group input:focus,.field-group select:focus{border-color:var(--green)}
+.field-group .tip{font-size:11px;color:var(--gray-400);margin-top:3px}
+
+/* MODE TOGGLE */
+.mode-toggle{display:flex;background:var(--gray-100);border-radius:var(--radius);padding:3px;gap:3px;margin-bottom:1.25rem}
+.mode-btn{flex:1;padding:7px 12px;border:none;border-radius:8px;background:transparent;color:var(--gray-600);font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:400;transition:all .15s}
+.mode-btn.active{background:var(--white);color:var(--gray-900);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+
+/* TIER ROWS */
+.tier-row{display:grid;grid-template-columns:1fr 1fr 1fr 28px;gap:8px;align-items:end;margin-bottom:8px}
+.add-tier-btn{width:100%;padding:8px;background:none;border:1.5px dashed var(--gray-200);border-radius:var(--radius);color:var(--green);font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:4px;font-weight:500;transition:border-color .15s}
+.add-tier-btn:hover{border-color:var(--green)}
+.rm-btn{background:none;border:none;color:var(--gray-400);font-size:18px;cursor:pointer;padding:0;line-height:1;align-self:flex-end;padding-bottom:9px}
+.rm-btn:hover{color:var(--red)}
+
+/* OVERHEAD TOGGLES */
+.toggle-item{display:flex;align-items:flex-start;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--gray-100);gap:12px}
+.toggle-item:last-child{border-bottom:none;padding-bottom:0}
+.toggle-left{flex:1;min-width:0}
+.toggle-title{font-size:13px;font-weight:500;color:var(--gray-900)}
+.toggle-desc{font-size:11px;color:var(--gray-400);margin-top:2px;line-height:1.4}
+.toggle-tip{font-size:11px;color:var(--green-dark);margin-top:4px;font-weight:500}
+.toggle-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.yn-group{display:flex;border:1.5px solid var(--gray-200);border-radius:8px;overflow:hidden}
+.yn-btn{padding:5px 12px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;background:none;border:none;cursor:pointer;color:var(--gray-400);transition:all .15s}
+.yn-btn.yes.active{background:var(--green);color:#fff}
+.yn-btn.no.active{background:var(--gray-100);color:var(--gray-900)}
+.cost-input-row{display:flex;align-items:center;gap:4px}
+.cost-input-row .prefix{font-size:13px;color:var(--gray-600)}
+.cost-input-row input{width:108px;padding:5px 9px;font-size:13px;border:1.5px solid var(--gray-200);border-radius:8px;background:var(--white);color:var(--gray-900);font-family:'DM Sans',sans-serif;outline:none}
+.cost-input-row input:focus{border-color:var(--green)}
+.cost-input-row .suffix{font-size:11px;color:var(--gray-400)}
+
+/* KELLY INCLUDED */
+.kelly-incl{background:var(--green-light);border:1px solid var(--green-mid);border-radius:var(--radius);padding:1rem 1.25rem;margin-top:1rem}
+.kelly-incl-title{font-size:11px;font-weight:600;color:var(--green-dark);margin-bottom:.6rem;text-transform:uppercase;letter-spacing:.07em}
+.kelly-tags{display:flex;flex-wrap:wrap;gap:6px}
+.k-pill{background:rgba(0,166,81,0.12);color:var(--green-dark);font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;border:1px solid rgba(0,166,81,0.2)}
+
+/* CTA BUTTON */
+.calc-btn{width:100%;padding:14px;background:var(--green);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;letter-spacing:.02em;transition:background .15s;margin-bottom:1.5rem}
+.calc-btn:hover{background:var(--green-dark)}
+
+/* RESULTS */
+.results-header{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem}
+.results-district{font-family:'DM Serif Display',serif;font-size:22px;color:var(--gray-900)}
+.results-district span{color:var(--green)}
+
+.metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
+.metric-box{background:var(--gray-100);border-radius:var(--radius);padding:1rem;text-align:center}
+.metric-box.highlight{background:var(--navy-light)}
+.m-label{font-size:11px;color:var(--gray-400);margin-bottom:4px;font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+.m-value{font-size:24px;font-weight:600;color:var(--gray-900);line-height:1}
+.m-value.red{color:var(--red)}
+.m-value.blue{color:var(--navy)}
+
+.savings-hero{background:var(--navy);border-radius:var(--radius-lg);padding:1.75rem;text-align:center;margin:1.25rem 0;position:relative;overflow:hidden}
+.savings-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 80% at 50% 100%,rgba(0,166,81,0.25) 0%,transparent 70%)}
+.sh-label{font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:.5rem;font-weight:400;letter-spacing:.04em;position:relative}
+.sh-amount{font-family:'DM Serif Display',serif;font-size:clamp(36px,6vw,56px);color:var(--green);line-height:1;margin-bottom:.5rem;position:relative}
+.sh-sub{font-size:13px;color:rgba(255,255,255,0.5);position:relative}
+
+.breakdown-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-400);margin-bottom:.75rem}
+.breakdown-line{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--gray-100);font-size:13px}
+.breakdown-line:last-child{border-bottom:none;font-weight:600;font-size:14px;color:var(--gray-900);padding-top:8px}
+.breakdown-line .b-label{color:var(--gray-600)}
+.breakdown-line.total .b-label{color:var(--gray-900)}
+.breakdown-line .b-val{font-weight:500;color:var(--gray-900)}
+.breakdown-line .b-val.red{color:var(--red)}
+
+.sensitivity-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-400);margin-bottom:.75rem;margin-top:1.25rem}
+.fill-row{display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid var(--gray-100)}
+.fill-row:last-child{border-bottom:none}
+.fill-label{font-size:12px;color:var(--gray-400);min-width:96px}
+.fill-label.kelly{color:var(--green);font-weight:600}
+.fill-bar-bg{flex:1;height:7px;background:var(--gray-100);border-radius:4px;overflow:hidden}
+.fill-bar-fg{height:100%;border-radius:4px;background:var(--green-mid);transition:width .4s}
+.fill-bar-fg.kelly{background:var(--green)}
+.fill-amount{font-size:12px;font-weight:500;color:var(--gray-900);min-width:80px;text-align:right}
+.fill-amount.kelly{color:var(--green);font-weight:600}
+
+.divider{border:none;border-top:1px solid var(--gray-100);margin:1.25rem 0}
+
+.action-row{display:flex;gap:10px;margin-top:1.25rem}
+.act-btn{flex:1;padding:11px 14px;border-radius:var(--radius);font-size:13px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:all .15s;text-align:center}
+.act-btn.primary{background:var(--green);color:#fff;border:none}
+.act-btn.primary:hover{background:var(--green-dark)}
+.act-btn.secondary{background:none;border:1.5px solid var(--gray-200);color:var(--gray-900)}
+.act-btn.secondary:hover{border-color:var(--gray-400)}
+
+.hidden{display:none!important}
+
+/* FOOTER */
+footer{background:var(--navy);padding:1.5rem 2rem;text-align:center}
+footer p{font-size:12px;color:rgba(255,255,255,0.35)}
+
+@media(max-width:600px){
+  .two-col,.three-col{grid-template-columns:1fr}
+  .metrics-grid{grid-template-columns:1fr}
+  .toggle-right{flex-direction:column;align-items:flex-end;gap:6px}
+  .action-row{flex-direction:column}
+  .site-header{padding:0 1rem}
+  .container{padding:1rem 1rem 3rem}
+  .hero{padding:2rem 1rem 3rem}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="logo-wrap">
+    <span class="logo-mark">Kelly Education</span>
+    <span class="logo-sub">Substitute Staffing</span>
+  </div>
+  <span class="header-tag">ROI Calculator — Confidential</span>
+</header>
+
+<div class="hero">
+  <div class="hero-eyebrow">Prospect Analysis Tool</div>
+  <h1>How much is your substitute<br/>program <em>really</em> costing you?</h1>
+  <p class="hero-sub">Enter your district data below to see the full picture — including hidden overhead costs most districts never add up.</p>
+</div>
+
+<div class="container">
+
+  <!-- DISTRICT INFO -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon green">🏫</div>
+      <div>
+        <div class="sec-label">Step 1</div>
+        <div class="sec-title">District information</div>
+      </div>
+    </div>
+    <div class="two-col" style="margin-bottom:1rem">
+      <div class="field-group">
+        <label>District name</label>
+        <input type="text" id="dName" placeholder="e.g. Austin ISD"/>
+      </div>
+      <div class="field-group">
+        <label>State</label>
+        <input type="text" id="dState" placeholder="TX" maxlength="2" style="text-transform:uppercase"/>
+      </div>
+    </div>
+    <div class="three-col">
+      <div class="field-group">
+        <label>Total students</label>
+        <input type="number" id="students" placeholder="10,000" min="0"/>
+      </div>
+      <div class="field-group">
+        <label>Total staff</label>
+        <input type="number" id="staff" placeholder="800" min="0"/>
+      </div>
+      <div class="field-group">
+        <label>School days / year</label>
+        <input type="number" id="schoolDays" value="180" min="1" max="220"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABSENCE & FILL -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon green">📊</div>
+      <div>
+        <div class="sec-label">Step 2</div>
+        <div class="sec-title">Absence &amp; fill rate data</div>
+      </div>
+    </div>
+    <div class="two-col" style="margin-bottom:1rem">
+      <div class="field-group">
+        <label>Absence rate (%)</label>
+        <input type="number" id="absRate" placeholder="5.5" min="0" max="100" step="0.1"/>
+        <span class="tip">Average % of staff absent on any given day</span>
+      </div>
+      <div class="field-group">
+        <label>Current fill rate (%)</label>
+        <input type="number" id="fillRate" placeholder="72" min="0" max="100" step="1"/>
+        <span class="tip">% of absences you successfully fill with a sub</span>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="field-group">
+        <label>Internal coverage rate ($ / day)</label>
+        <input type="number" id="intRate" placeholder="250" min="0"/>
+        <span class="tip">Cost when existing staff cover unfilled absences</span>
+      </div>
+      <div class="field-group">
+        <label>Internal coverage share (%)</label>
+        <input type="number" id="intCov" placeholder="20" min="0" max="100"/>
+        <span class="tip">% of unfilled absences covered internally</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAY RATE -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon green">💵</div>
+      <div>
+        <div class="sec-label">Step 3</div>
+        <div class="sec-title">Substitute pay rate</div>
+      </div>
+    </div>
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="btnS" onclick="setMode('s')">Single rate</button>
+      <button class="mode-btn" id="btnT" onclick="setMode('t')">Tiered by qualification</button>
+    </div>
+    <div id="simpleMode">
+      <div class="one-col">
+        <div class="field-group">
+          <label>Daily substitute pay rate ($)</label>
+          <input type="number" id="sRate" placeholder="130" min="0"/>
+        </div>
+      </div>
+    </div>
+    <div id="tieredMode" class="hidden">
+      <div id="tiersWrap"></div>
+      <button class="add-tier-btn" onclick="addTier()">+ Add qualification tier</button>
+    </div>
+  </div>
+
+  <!-- OVERHEAD -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon navy">🔍</div>
+      <div>
+        <div class="sec-label">Step 4</div>
+        <div class="sec-title">Internal program overhead costs</div>
+      </div>
+    </div>
+    <p style="font-size:13px;color:var(--gray-400);margin-bottom:1.25rem;line-height:1.5">Does your district currently bear any of these costs running the sub program in-house? Toggle each one on to include it in the analysis — these all go away when Kelly manages your program.</p>
+    <div id="overheadToggles"></div>
+  </div>
+
+  <!-- KELLY PARTNERSHIP -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon green">🤝</div>
+      <div>
+        <div class="sec-label">Step 5</div>
+        <div class="sec-title">Kelly Education partnership</div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="field-group">
+        <label>Kelly markup / service fee (%)</label>
+        <input type="number" id="kFee" placeholder="18" min="0" max="100" step="0.5"/>
+        <span class="tip">Applied on top of the substitute pay rate</span>
+      </div>
+      <div class="field-group">
+        <label>Projected fill rate with Kelly (%)</label>
+        <input type="number" id="kFill" placeholder="90" min="0" max="100" step="1"/>
+        <span class="tip">Kelly's average fill rate in comparable districts</span>
+      </div>
+    </div>
+    <div class="kelly-incl">
+      <div class="kelly-incl-title">Everything included in Kelly's fee — no extra charge</div>
+      <div class="kelly-tags">
+        <span class="k-pill">Flexible scheduling</span>
+        <span class="k-pill">Weekly pay</span>
+        <span class="k-pill">Medical insurance</span>
+        <span class="k-pill">Dental &amp; vision</span>
+        <span class="k-pill">Life insurance</span>
+        <span class="k-pill">401(k) plan</span>
+        <span class="k-pill">Service bonuses</span>
+        <span class="k-pill">Corporate discounts</span>
+        <span class="k-pill">Free training</span>
+        <span class="k-pill">Background checks</span>
+        <span class="k-pill">Credentialing</span>
+        <span class="k-pill">Workers' comp</span>
+        <span class="k-pill">Payroll processing</span>
+        <span class="k-pill">Sub pool recruitment</span>
+      </div>
+    </div>
+  </div>
+
+  <button class="calc-btn" onclick="calculate()">Calculate total cost &amp; savings →</button>
+
+  <!-- RESULTS -->
+  <div id="resultsSection" class="hidden">
+    <div class="card">
+      <div class="results-header">
+        <div>
+          <div class="sec-label">Results</div>
+          <div class="results-district" id="rDistName">Your District</div>
+        </div>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="metric-box">
+          <div class="m-label">Total absences / year</div>
+          <div class="m-value" id="rAbs">—</div>
+        </div>
+        <div class="metric-box">
+          <div class="m-label">Unfilled absences / year</div>
+          <div class="m-value" id="rUnfilled">—</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="breakdown-title">Current in-house cost breakdown</div>
+      <div id="costBreakdown"></div>
+
+      <div class="divider"></div>
+
+      <div class="metrics-grid">
+        <div class="metric-box">
+          <div class="m-label">Total current spend</div>
+          <div class="m-value red" id="rCurrent">—</div>
+        </div>
+        <div class="metric-box highlight">
+          <div class="m-label">Projected cost with Kelly</div>
+          <div class="m-value blue" id="rKelly">—</div>
+        </div>
+      </div>
+
+      <div class="savings-hero">
+        <div class="sh-label">Estimated annual savings partnering with Kelly Education</div>
+        <div class="sh-amount" id="rSavings">$0</div>
+        <div class="sh-sub" id="rSavingsSub"></div>
+      </div>
+
+      <div class="sensitivity-title">Fill rate sensitivity — projected total annual cost with Kelly</div>
+      <div id="fillScenarios"></div>
+
+      <div class="action-row">
+        <button class="act-btn secondary" onclick="window.print()">Print / save as PDF</button>
+        <button class="act-btn primary" onclick="scrollToTop()">Recalculate for new prospect →</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>Kelly Education — Confidential prospect analysis tool. For internal use only.</p>
+  <p style="margin-top:4px">© 2025 Kelly Services, Inc. All rights reserved.</p>
+</footer>
+
+<script>
+let mode='s';
+let tiers=[{qual:'Uncertified',rate:'',pct:''}];
+
+const overheadDefs=[
+  {id:'hr',   title:'HR / admin overhead',        desc:'Sub coordinator salary, payroll processing, HRIS staff time',                   def:55000, tip:'Typical sub coordinator FTE: $45–70k/yr'},
+  {id:'rec',  title:'Recruiting & onboarding',     desc:'Background checks, job postings, fingerprinting, TB tests, orientation',         def:12000, tip:'~$50–80 per sub × pool size, plus posting fees'},
+  {id:'ben',  title:'Benefits exposure',           desc:'Medical, dental, vision, life insurance, retirement for eligible subs',          def:0,     tip:'Enter annual premium cost for subs qualifying under ACA'},
+  {id:'comp', title:'Compliance & legal',          desc:"Workers' comp premiums, unemployment insurance, ACA hour tracking",              def:18000, tip:"Workers' comp alone: $10–25k for mid-size districts"},
+  {id:'tech', title:'Technology & software',       desc:'Sub-finder / absence management platform (Frontline, etc.), HRIS licenses',      def:11000, tip:'Frontline/similar: $8–15k/yr for a mid-size district'},
+];
+
+let ohState={};
+overheadDefs.forEach(d=>{ohState[d.id]={on:false,val:d.def}});
+
+function renderOverhead(){
+  const w=document.getElementById('overheadToggles');
+  w.innerHTML='';
+  overheadDefs.forEach(d=>{
+    const s=ohState[d.id];
+    const el=document.createElement('div');
+    el.className='toggle-item';
+    el.innerHTML=`
+      <div class="toggle-left">
+        <div class="toggle-title">${d.title}</div>
+        <div class="toggle-desc">${d.desc}</div>
+        ${s.on?`<div class="toggle-tip">${d.tip}</div>`:''}
+      </div>
+      <div class="toggle-right">
+        ${s.on?`<div class="cost-input-row">
+          <span class="prefix">$</span>
+          <input type="number" value="${s.val}" min="0" step="500"
+            onchange="ohState['${d.id}'].val=parseFloat(this.value)||0"/>
+          <span class="suffix">/yr</span>
+        </div>`:''}
+        <div class="yn-group">
+          <button class="yn-btn yes${s.on?' active':''}" onclick="setOH('${d.id}',true)">Yes</button>
+          <button class="yn-btn no${!s.on?' active':''}" onclick="setOH('${d.id}',false)">No</button>
+        </div>
+      </div>`;
+    w.appendChild(el);
+  });
+}
+
+function setOH(id,val){ohState[id].on=val;renderOverhead();}
+
+function setMode(m){
+  mode=m;
+  document.getElementById('btnS').classList.toggle('active',m==='s');
+  document.getElementById('btnT').classList.toggle('active',m==='t');
+  document.getElementById('simpleMode').classList.toggle('hidden',m!=='s');
+  document.getElementById('tieredMode').classList.toggle('hidden',m!=='t');
+  if(m==='t'&&tiers.length===0)addTier();
+  renderTiers();
+}
+
+function renderTiers(){
+  const w=document.getElementById('tiersWrap');
+  w.innerHTML='';
+  tiers.forEach((t,i)=>{
+    const r=document.createElement('div');
+    r.className='tier-row';
+    r.innerHTML=`
+      <div class="field-group">
+        ${i===0?'<label>Qualification</label>':''}
+        <input type="text" value="${t.qual}" placeholder="e.g. Certified"
+          onchange="tiers[${i}].qual=this.value"/>
+      </div>
+      <div class="field-group">
+        ${i===0?'<label>Daily rate ($)</label>':''}
+        <input type="number" value="${t.rate}" placeholder="130" min="0"
+          onchange="tiers[${i}].rate=this.value"/>
+      </div>
+      <div class="field-group">
+        ${i===0?'<label>% of subs</label>':''}
+        <input type="number" value="${t.pct}" placeholder="100" min="0" max="100"
+          onchange="tiers[${i}].pct=this.value"/>
+      </div>
+      <button class="rm-btn" onclick="removeTier(${i})">${tiers.length>1?'×':''}</button>`;
+    w.appendChild(r);
+  });
+}
+
+function addTier(){tiers.push({qual:'',rate:'',pct:''});renderTiers();}
+function removeTier(i){if(tiers.length<=1)return;tiers.splice(i,1);renderTiers();}
+
+function getPayRate(){
+  if(mode==='s') return parseFloat(document.getElementById('sRate').value)||0;
+  let tot=0,wt=0;
+  tiers.forEach(t=>{const r=parseFloat(t.rate)||0,p=parseFloat(t.pct)||0;tot+=r*p;wt+=p;});
+  return wt>0?tot/wt:0;
+}
+
+function fmt(n){return '$'+Math.round(n).toLocaleString('en-US');}
+
+function calculate(){
+  const staff  = parseFloat(document.getElementById('staff').value)||0;
+  const days   = parseFloat(document.getElementById('schoolDays').value)||180;
+  const absR   = parseFloat(document.getElementById('absRate').value)||0;
+  const fillR  = parseFloat(document.getElementById('fillRate').value)||0;
+  const intRate= parseFloat(document.getElementById('intRate').value)||0;
+  const intCov = parseFloat(document.getElementById('intCov').value)||0;
+  const kFee   = parseFloat(document.getElementById('kFee').value)||0;
+  const kFill  = Math.min(100,parseFloat(document.getElementById('kFill').value)||0);
+  const payRate= getPayRate();
+  const dName  = document.getElementById('dName').value||'Your District';
+  const dState = document.getElementById('dState').value.toUpperCase();
+
+  const totalAbs   = staff * days * (absR/100);
+  const filledAbs  = totalAbs * (fillR/100);
+  const unfilledAbs= totalAbs - filledAbs;
+
+  const subCost  = filledAbs * payRate;
+  const intDays  = unfilledAbs * (intCov/100);
+  const intCost  = intDays * intRate;
+
+  let ohTotal=0;
+  const ohLines=[];
+  overheadDefs.forEach(d=>{
+    const s=ohState[d.id];
+    if(s.on){ohTotal+=s.val;ohLines.push({label:d.title,val:s.val});}
+  });
+
+  const currentTotal = subCost + intCost + ohTotal;
+
+  const kFilledAbs = totalAbs * (kFill/100);
+  const kSubCost   = kFilledAbs * payRate * (1 + kFee/100);
+  const kUnfilled  = totalAbs - kFilledAbs;
+  const kIntCost   = kUnfilled * (intCov/100) * intRate;
+  const kellyTotal = kSubCost + kIntCost;
+
+  const savings = currentTotal - kellyTotal;
+  const savPct  = currentTotal>0 ? Math.round(savings/currentTotal*100) : 0;
+
+  document.getElementById('rDistName').innerHTML =
+    (dState ? `<span>${dName}</span>, ${dState}` : `<span>${dName}</span>`);
+  document.getElementById('rAbs').textContent     = Math.round(totalAbs).toLocaleString();
+  document.getElementById('rUnfilled').textContent= Math.round(unfilledAbs).toLocaleString();
+  document.getElementById('rCurrent').textContent = fmt(currentTotal);
+  document.getElementById('rKelly').textContent   = fmt(kellyTotal);
+  document.getElementById('rSavings').textContent = fmt(Math.max(0,savings));
+  document.getElementById('rSavingsSub').textContent =
+    savPct>0 ? savPct+'% reduction in total substitute program spend'
+             : 'Adjust inputs above to see projected savings';
+
+  const bd = document.getElementById('costBreakdown');
+  const lines=[
+    {label:'Substitute pay (filled absences)',  val:subCost,  cls:''},
+    {label:'Internal coverage cost',            val:intCost,  cls:''},
+    ...ohLines.map(l=>({label:l.label,val:l.val,cls:''})),
+    {label:'Total current spend',               val:currentTotal, cls:'total'},
+  ];
+  bd.innerHTML=lines.map(l=>`
+    <div class="breakdown-line ${l.cls}">
+      <span class="b-label">${l.label}</span>
+      <span class="b-val${l.cls==='total'?' red':''}">${fmt(l.val)}</span>
+    </div>`).join('');
+
+  const sc=document.getElementById('fillScenarios');
+  sc.innerHTML='';
+  const maxC=totalAbs*payRate*(1+kFee/100);
+  [60,70,80,90,95,100].forEach(fp=>{
+    const fa  = totalAbs*(fp/100);
+    const cost= fa*payRate*(1+kFee/100) + (totalAbs*(1-fp/100))*(intCov/100)*intRate;
+    const isK = Math.round(kFill)===fp;
+    const pct = maxC>0 ? Math.min(100,cost/maxC*100) : fp;
+    const div = document.createElement('div');
+    div.className='fill-row';
+    div.innerHTML=`
+      <span class="fill-label${isK?' kelly':''}">${fp}% fill${isK?' ★':''}</span>
+      <div class="fill-bar-bg"><div class="fill-bar-fg${isK?' kelly':''}" style="width:${pct}%"></div></div>
+      <span class="fill-amount${isK?' kelly':''}">${fmt(cost)}</span>`;
+    sc.appendChild(div);
+  });
+
+  document.getElementById('resultsSection').classList.remove('hidden');
+  document.getElementById('resultsSection').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function scrollToTop(){
+  window.scrollTo({top:0,behavior:'smooth'});
+  document.getElementById('resultsSection').classList.add('hidden');
+}
+
+renderOverhead();
+renderTiers();
+</script>
+</body>
+</html>
